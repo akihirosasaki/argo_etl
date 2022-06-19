@@ -1,0 +1,17 @@
+in:
+  type: file
+  path_prefix: ../data/csv/
+  parser:
+    charset: UTF-8
+    newline: CRLF
+    type: csv
+    delimiter: ','
+    quote: '"'
+    escape: '"'
+    null_string: 'NULL'
+    skip_header_lines: 1
+    columns:
+    - {name: customer_id, type: string}
+    - {name: customer_name, type: string}
+out: 
+  type: stdout

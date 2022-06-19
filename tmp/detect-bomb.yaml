@@ -1,0 +1,11 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata: 
+  name: detect-bomb
+spec:
+  arguments: 
+    parameters:
+    - name: word-detect
+      value: bomb
+  workflowTemplateRef:
+    name: wftmpl-excercise2

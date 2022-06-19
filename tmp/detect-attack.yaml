@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata: 
+  name: detect-attack
+spec:
+  arguments: 
+    parameters:
+    - name: word-detect
+      value: attack
+  entrypoint: wftmpl-excercise2
+  workflowTemplateRef:
+    name: wftmpl-excercise2
