@@ -23,3 +23,12 @@ BigQuery
 k8s
 - 
 - 
+
+
+# command
+
+```
+set EMBULK_VERSION 0.9.23
+docker build . -t embulk:$EMBULK_VERSION --build-arg VERSION=$EMBULK_VERSION
+docker run -v (pwd)/argo:/config -v (pwd)/data/csv:/data embulk:$EMBULK_VERSION run /config/config.yml
+```

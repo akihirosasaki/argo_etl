@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: embulk-template
+spec:
+  entrypoint: embulk
+  templates:
+    - name: embulk
+      inputs:
+        artifacts:
+        - name: embulk-config
+          path: /input/config.yml
+      container:
+        image: embulk:v0.1
+        command: [java]
+        args:  ["-jar", "/root/.embulk/bin/embulk", "run", "/input/config.yml"]
+        resources:
+          limits:
+            memory: "4Gi"
+            cpu: "2"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        hostPath:
+          path: /Users/sasakiakihiro/self_development/argo_etl/data/csv
