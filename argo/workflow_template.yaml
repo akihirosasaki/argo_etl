@@ -23,5 +23,5 @@ spec:
           mountPath: /data
       volumes:
       - name: data
-        hostPath:
-          path: /Users/sasakiakihiro/self_development/argo_etl/data/csv
+        configmap:
+          name: customer-data

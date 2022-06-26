@@ -11,7 +11,9 @@ spec:
         data: |
           in:
             type: file
-            path_prefix: 'data/customer.csv'
+            path_prefix: 'data/'
+            decoders:
+            - {type: gzip}
             parser:
               charset: UTF-8
               newline: CRLF
