@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  name: csv-to-stdout-sample
+  name: csv-from-gcs-to-bq
 spec:
   entrypoint: embulk
   arguments:
@@ -10,8 +10,11 @@ spec:
       raw:
         data: |
           in:
-            type: file
-            path_prefix: 'data/'
+            type: gcs
+            bucket: test-sasakky-bucket
+            path_prefix: "data/"
+            auth_method: json_key
+            json_keyfile: /run/secrets/gcp-secret
             decoders:
             - {type: gzip}
             parser:
@@ -48,6 +51,13 @@ spec:
                 - {name: application_date, type: string}
                 - {name: status_cd, type: string}
           out: 
-            type: stdout       
+            type: bigquery
+            mode: replace
+            auth_method: json_key
+            json_keyfile: /run/secrets/gcp-secret
+            dataset: raw
+            table: test
+            auto_create_table: true
+            location: us-central1 
   workflowTemplateRef:
     name: embulk-template
