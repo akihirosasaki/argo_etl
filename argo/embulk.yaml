@@ -58,16 +58,6 @@ spec:
             dataset: raw
             table: test
             auto_create_table: true
-            location: us-central1
-            # column_options:
-            #   - {name: customer_id, type: string}
-            #   - {name: gender_cd, type: string}
-            #   - {name: gender, type: string}
-            #   - {name: birth_day, type: timestamp, format: '%Y-%m-%d'}
-            #   - {name: age, type: long}
-            #   - {name: postal_cd, type: string}
-            #   - {name: application_store_cd, type: string}
-            #   - {name: application_date, type: string}
-            #   - {name: status_cd, type: string}
+            location: us-central1 
   workflowTemplateRef:
     name: embulk-template
