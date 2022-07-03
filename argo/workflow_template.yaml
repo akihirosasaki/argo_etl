@@ -14,14 +14,19 @@ spec:
         image: embulk:v0.1
         command: [java]
         args:  ["-jar", "/root/.embulk/bin/embulk", "run", "/input/config.yml"]
+        volumeMounts:
+        - name: credentials-volume
+          mountPath: "/run/secrets/gcp-secret"
+          readOnly: true
+          subpath: gcp-secret
         resources:
           limits:
             memory: "4Gi"
             cpu: "2"
-        volumeMounts:
-        - name: data
-          mountPath: /data
       volumes:
-      - name: data
-        configmap:
-          name: customer-data
+        - name: credentials-volume
+          secret:
+            secretName: volume-secret
+            items:
+            - key: gcp-secret
+              path: gcp-secret
