@@ -6,12 +6,6 @@ spec:
   entrypoint: embulk
   templates:
     - name: embulk
-      retryStrategy:
-        limit: 2
-        retryPolicy: "Always"
-        backoff:
-          duration: "1m"
-          factor: 2
       inputs:
         artifacts:
         - name: embulk-config

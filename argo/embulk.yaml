@@ -4,60 +4,75 @@ metadata:
   name: csv-from-gcs-to-bq
 spec:
   entrypoint: embulk
-  arguments:
-    artifacts:
-    - name: embulk-config
-      raw:
-        data: |
-          in:
-            type: gcs
-            bucket: test-sasakky-bucket
-            path_prefix: "data/"
-            auth_method: json_key
-            json_keyfile: /run/secrets/gcp-secret
-            decoders:
-            - {type: gzip}
-            parser:
-              charset: UTF-8
-              newline: CRLF
-              type: csv
-              delimiter: ','
-              quote: '"'
-              escape: '"'
-              null_string: 'NULL'
-              skip_header_lines: 1
-              columns:
-              - {name: customer_id, type: string}
-              - {name: customer_name, type: string}
-              - {name: gender_cd, type: string}
-              - {name: gender, type: string}
-              - {name: birth_day, type: timestamp, format: '%Y-%m-%d'}
-              - {name: age, type: long}
-              - {name: postal_cd, type: string}
-              - {name: address, type: string}
-              - {name: application_store_cd, type: string}
-              - {name: application_date, type: string}
-              - {name: status_cd, type: string}
-          filters:
-            - type: column
-              columns: 
-                - {name: customer_id, type: string}
-                - {name: gender_cd, type: string}
-                - {name: gender, type: string}
-                - {name: birth_day, type: timestamp, format: '%Y-%m-%d'}
-                - {name: age, type: long}
-                - {name: postal_cd, type: string}
-                - {name: application_store_cd, type: string}
-                - {name: application_date, type: string}
-                - {name: status_cd, type: string}
-          out: 
-            type: bigquery
-            mode: replace
-            auth_method: json_key
-            json_keyfile: /run/secrets/gcp-secret
-            dataset: raw
-            table: test
-            auto_create_table: true
-            location: us-central1 
-  workflowTemplateRef:
-    name: embulk-template
+  onExit: exit-handler
+  templates:
+  - name: embulk
+    steps:
+      - - name: call-embulk-template
+          templateRef:
+            name: embulk-template
+            template: embulk
+          arguments:
+            artifacts:
+            - name: embulk-config
+              raw:
+                data: |
+                  in:
+                    type: gcs
+                    bucket: test-sasakky-bucket
+                    path_prefix: "data/"
+                    auth_method: json_key
+                    json_keyfile: /run/secrets/gcp-secret
+                    decoders:
+                    - {type: gzip}
+                    parser:
+                      charset: UTF-8
+                      newline: CRLF
+                      type: csv
+                      delimiter: ','
+                      quote: '"'
+                      escape: '"'
+                      null_string: 'NULL'
+                      skip_header_lines: 1
+                      columns:
+                      - {name: customer_id, type: string}
+                      - {name: customer_name, type: string}
+                      - {name: gender_cd, type: string}
+                      - {name: gender, type: string}
+                      - {name: birth_day, type: timestamp, format: '%Y-%m-%d'}
+                      - {name: age, type: long}
+                      - {name: postal_cd, type: string}
+                      - {name: address, type: string}
+                      - {name: application_store_cd, type: string}
+                      - {name: application_date, type: string}
+                      - {name: status_cd, type: string}
+                  filters:
+                    - type: column
+                      columns: 
+                        - {name: customer_id, type: string}
+                        - {name: gender_cd, type: string}
+                        - {name: gender, type: string}
+                        - {name: birth_day, type: timestamp, format: '%Y-%m-%d'}
+                        - {name: age, type: long}
+                        - {name: postal_cd, type: string}
+                        - {name: application_store_cd, type: string}
+                        - {name: application_date, type: string}
+                        - {name: status_cd, type: string}
+                  out: 
+                    type: bigquery
+                    mode: replace
+                    auth_method: json_key
+                    json_keyfile: /run/secrets/gcp-secret
+                    dataset: raw
+                    table: test
+                    auto_create_table: true
+                    location: us-central1 
+
+  - name: exit-handler
+    steps:
+      - - name: slack-notification
+          when: "{{workflow.status}} != Succeeded"
+          templateRef:
+            name: slack   
+            template: failed-notification-to-slack
+          
